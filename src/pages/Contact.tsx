@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, MessageSquare, Heart, Check, ArrowRight } from 'lucide-react';
+import { Mail, MessageSquare, Heart, Check, ArrowRight, Loader2 } from 'lucide-react';
 import { useSEO } from '@/hooks/useSEO';
 import ScrollReveal from '@/components/ScrollReveal';
 import LocationFields, { type LocationData } from '@/components/LocationFields';
@@ -17,8 +17,9 @@ export default function ContactPage() {
   const [active, setActive]         = useState<FormType>('contact');
   const [submitted, setSubmitted]   = useState<FormType | null>(null);
   const [formError, setFormError]   = useState('');
+  const [sending, setSending]       = useState(false);
 
-  const [cData, setCData]   = useState({ name:'', email:'', subject:'', message:'', location:{country:'',city_region:''} as LocationData });
+  const [cData, setCData]   = useState({ name:'', email:'', subject:'', message:'', location:{country:'',city_region:''} as LocationData, website:'' });
   const [pData, setPData]   = useState({ name:'', email:'', request:'', location:{country:'',city_region:''} as LocationData });
   const [nData, setNData]   = useState({ name:'', email:'', location:{country:'',city_region:''} as LocationData });
 
@@ -96,20 +97,21 @@ export default function ContactPage() {
                         <p className="text-white/55">Thank you, {cData.name}. We'll reply within 24–48 hours.</p>
                       </div>
                     ) : (
-                      <form onSubmit={async (e)=>{ e.preventDefault(); setFormError(''); if(!cData.location.country){setFormError('Please select your country.');return;} try { await insertContactMessage({name:cData.name,email:cData.email,subject:cData.subject,message:cData.message,country:cData.location.country,city_region:cData.location.city_region}); setSubmitted('contact'); } catch { setFormError('Something went wrong. Please try again.'); } }} className="space-y-4" noValidate>
+                      <form onSubmit={async (e)=>{ e.preventDefault(); setFormError(''); if(cData.website){ return; } if(!cData.name.trim()){setFormError('Please enter your name.');return;} if(!cData.email.trim()){setFormError('Please enter your email address.');return;} if(!/^[^\s@,<>]+@[^\s@,<>]+\.[^\s@,<>]+$/.test(cData.email.trim())){setFormError('Please enter a valid email address.');return;} if(!cData.subject.trim()){setFormError('Please enter a subject.');return;} if(!cData.message.trim()){setFormError('Please enter your message.');return;} if(!cData.location.country){setFormError('Please select your country.');return;} setSending(true); try { await insertContactMessage({name:cData.name,email:cData.email,subject:cData.subject,message:cData.message,country:cData.location.country,city_region:cData.location.city_region,website:cData.website}); setSubmitted('contact'); } catch (err) { setFormError(err instanceof Error ? err.message : 'Something went wrong. Please try again.'); } finally { setSending(false); } }} className="space-y-4" noValidate>
                         <div>
                           <h2 className="font-playfair text-2xl font-bold text-white mb-1">Send a Message</h2>
                           <p className="text-white/55 text-sm">We read every message and respond personally.</p>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-3.5">
-                          <input type="text" placeholder="Your Name *" value={cData.name} onChange={e=>setCData({...cData,name:e.target.value})} required aria-label="Your name" className={inputCls} />
-                          <input type="email" placeholder="Email Address *" value={cData.email} onChange={e=>setCData({...cData,email:e.target.value})} required aria-label="Email address" className={inputCls} />
+                          <input type="text" placeholder="Your Name *" value={cData.name} onChange={e=>setCData({...cData,name:e.target.value})} required disabled={sending} aria-label="Your name" className={inputCls} />
+                          <input type="email" placeholder="Email Address *" value={cData.email} onChange={e=>setCData({...cData,email:e.target.value})} required disabled={sending} aria-label="Email address" className={inputCls} />
                         </div>
-                        <input type="text" placeholder="Subject" value={cData.subject} onChange={e=>setCData({...cData,subject:e.target.value})} required aria-label="Subject" className={inputCls} />
-                        <textarea placeholder="Your message…" value={cData.message} onChange={e=>setCData({...cData,message:e.target.value})} required rows={5} aria-label="Message" className={taCls} />
+                        <input type="text" placeholder="Subject" value={cData.subject} onChange={e=>setCData({...cData,subject:e.target.value})} required disabled={sending} aria-label="Subject" className={inputCls} />
+                        <textarea placeholder="Your message…" value={cData.message} onChange={e=>setCData({...cData,message:e.target.value})} required disabled={sending} rows={5} aria-label="Message" className={taCls} />
                         <LocationFields value={cData.location} onChange={(loc)=>setCData({...cData,location:loc})} />
-                        <button type="submit" className="inline-flex items-center gap-2 px-7 py-3.5 ih-btn-gold">
-                          Send Message <ArrowRight size={15} aria-hidden="true" />
+                        <input type="text" name="website" value={cData.website} onChange={e=>setCData({...cData,website:e.target.value})} tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] w-px h-px overflow-hidden" />
+                        <button type="submit" disabled={sending} className="inline-flex items-center gap-2 px-7 py-3.5 ih-btn-gold disabled:opacity-60 disabled:cursor-not-allowed">
+                          {sending ? <> <Loader2 size={15} className="animate-spin" aria-hidden="true" /> Sending…</> : <> Send Message <ArrowRight size={15} aria-hidden="true" /></>}
                         </button>
                         {formError && <p className="text-red-400 text-xs">{formError}</p>}
                       </form>
