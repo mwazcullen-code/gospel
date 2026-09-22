@@ -62,13 +62,13 @@ export default function AgeCards() {
                     ))}
                   </ul>
 
-                  <div className="relative w-full rounded-xl bg-white/[0.03] overflow-hidden" style={{ border: '1px solid #3A3A35' }}>
+                  <div className="relative w-full rounded-xl bg-white/[0.03]" style={{ border: '1px solid #3A3A35' }}>
                     <img
                       src={card.cover}
                       alt={`${card.age} devotional cover`}
                       loading="lazy"
                       className="relative block w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.03]"
-                      style={{ filter: 'brightness(1.2) contrast(1.1)', minHeight: '220px' }}
+                      style={{ filter: 'brightness(1.2) contrast(1.1)' }}
                     />
                   </div>
 

@@ -29,7 +29,7 @@ export default function CollectionCards() {
           {collections.map((c, i) => (
             <ScrollReveal key={c.id} delay={i * 100}>
               <div
-                className="rounded-2xl overflow-hidden h-full group transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_64px_rgba(217,166,46,0.2)]"
+                className="rounded-2xl h-full group transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_64px_rgba(217,166,46,0.2)]"
                 style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid #3A3A35' }}
               >
                 {/* Three full edition covers side by side */}
@@ -39,13 +39,13 @@ export default function CollectionCards() {
                       const ed = c.editions[key];
                       return (
                         <div key={key} className="flex-1 max-w-[33%]">
-                          <div className="aspect-[2/3] overflow-hidden rounded-lg bg-gradient-to-br from-white/[0.03] to-white/[0.01] flex items-center justify-center">
+                          <div className="rounded-lg bg-gradient-to-br from-white/[0.03] to-white/[0.01] flex items-center justify-center">
                             <img
                               src={ed.cover}
                               alt={`${c.title} — ${editionLabels[key]} Edition`}
                               loading="lazy"
                               decoding="async"
-                              className="block w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+                              className="block w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.03]"
                               style={{ filter: 'brightness(1.15) contrast(1.05)' }}
                             />
                           </div>
